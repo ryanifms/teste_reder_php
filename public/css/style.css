@@ -1,0 +1,103 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Corpo da página */
+body {
+    background-color: #f8f9fa;
+    color: #333;
+    padding: 20px;
+}
+
+/* Container principal */
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* Cabeçalhos */
+h1, h2 {
+    text-align: center;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+/* Formulários */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+label {
+    font-weight: bold;
+}
+
+input, button {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Botões */
+button {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    border: none;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Lista de clientes */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    background: #e9ecef;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Links de ação */
+.actions a {
+    text-decoration: none;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin: 0 5px;
+}
+
+.edit {
+    background-color: #28a745;
+}
+
+.delete {
+    background-color: #dc3545;
+}
+
+.actions a:hover {
+    opacity: 0.8;
+}
