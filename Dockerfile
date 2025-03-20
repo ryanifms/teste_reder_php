@@ -36,6 +36,9 @@ RUN echo '<VirtualHost *:80>' > /etc/apache2/sites-available/000-default.conf &&
     echo '    </Directory>' >> /etc/apache2/sites-available/000-default.conf && \
     echo '</VirtualHost>' >> /etc/apache2/sites-available/000-default.conf
 
+# Definir o ServerName para evitar o erro AH00558
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
 # Exponha a porta do Apache
 EXPOSE 80
 
