@@ -30,4 +30,3 @@ EXPOSE 80
 
 # Defina o comando de inicialização
 CMD ["apache2-foreground"]
-
