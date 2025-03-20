@@ -15,6 +15,9 @@ WORKDIR /var/www/html
 # Copia todos os arquivos para dentro do container
 COPY . .
 
+# Copia o arquivo .env para dentro do container
+COPY .env .env
+
 # Instala as dependências do Laravel
 RUN composer install --no-dev --optimize-autoloader
 
@@ -35,7 +38,7 @@ EXPOSE 80
 # Rodar o comando do Laravel para otimizar a configuração
 RUN php artisan config:clear && php artisan cache:clear && php artisan config:cache
 
-# Habilita o Laravel para rodar em produção (opcional)
+# Gera a chave da aplicação
 RUN php artisan key:generate --force
 
 # Inicia o Apache no primeiro plano
