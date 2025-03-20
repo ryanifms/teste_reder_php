@@ -20,6 +20,9 @@ COPY . .
 RUN chown -R www-data:www-data /var/www/html && \
     chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Defina o ServerName para evitar erro de domínio não qualificado
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
 # Instale o Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -40,3 +43,4 @@ EXPOSE 80
 
 # Defina o comando de inicialização
 CMD ["apache2-foreground"]
+
