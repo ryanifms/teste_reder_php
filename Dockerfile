@@ -1,7 +1,7 @@
 # Use a imagem base do PHP com Apache
 FROM php:8.2-apache
 
-# Instalar as dependências necessárias
+# Instalar dependências do sistema
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -9,9 +9,13 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     unzip \
     git \
+    curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql zip \
     && a2enmod rewrite
+
+# Instalar o Composer (gerenciador de dependências PHP)
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Configurar o diretório de trabalho
 WORKDIR /var/www/html
@@ -30,5 +34,6 @@ EXPOSE 80
 
 # Iniciar o Apache no contêiner
 CMD ["apache2-foreground"]
+
 
 
