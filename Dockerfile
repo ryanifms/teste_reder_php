@@ -1,38 +1,40 @@
-# Usa a imagem oficial do PHP com Apache
+# Usando imagem oficial do PHP com Apache
 FROM php:8.2-apache
 
-# Instala extensões necessárias
+# Instalar extensões necessárias para o PostgreSQL
 RUN apt-get update && apt-get install -y \
     libpq-dev unzip git curl \
     && docker-php-ext-install pdo pdo_pgsql
 
-# Instala Composer
+# Instala o Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Define o diretório de trabalho
+# Configura o diretório de trabalho
 WORKDIR /var/www/html
 
-# Copia os arquivos do Laravel
+# Copia todos os arquivos para dentro do container
 COPY . .
 
 # Instala as dependências do Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Configura permissões
+# Configura permissões para as pastas storage e bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Define o DocumentRoot para a pasta public
+# Configura o Apache para usar o DocumentRoot na pasta "public"
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 RUN sed -i "s|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|" /etc/apache2/sites-available/000-default.conf
 
-# Habilita o mod_rewrite
+# Habilita o módulo rewrite do Apache
 RUN a2enmod rewrite
 
-# Expõe a porta 80
+# Expõe a porta 80 para o servidor
 EXPOSE 80
 
-# Garante que as configurações do Laravel sejam recarregadas
+# Rodar o comando do Laravel para otimizar a configuração
 RUN php artisan config:clear && php artisan cache:clear && php artisan config:cache
 
-# Inicia o Apache
+# Inicia o Apache no primeiro plano
 CMD ["apache2-foreground"]
+
