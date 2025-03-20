@@ -1,47 +1,34 @@
-# Usando imagem oficial do PHP com Apache
+# Use a imagem base do PHP com Apache
 FROM php:8.2-apache
 
-# Instalar extensões necessárias para o PostgreSQL e outras dependências
+# Instalar as dependências necessárias
 RUN apt-get update && apt-get install -y \
-    libpq-dev unzip git curl \
-    && docker-php-ext-install pdo pdo_pgsql
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    unzip \
+    git \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_mysql zip \
+    && a2enmod rewrite
 
-# Instala o Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Configura o diretório de trabalho
+# Configurar o diretório de trabalho
 WORKDIR /var/www/html
 
-# Copia todos os arquivos para dentro do container
+# Copiar o conteúdo do seu projeto para dentro do contêiner
 COPY . .
 
-# Copia o arquivo .env para dentro do container
-COPY .env .env
+# Instalar as dependências do Laravel
+RUN composer install --optimize-autoloader --no-dev
 
-# Instala as dependências do Laravel
-RUN composer install --no-dev --optimize-autoloader
+# Ajustar permissões de diretórios (para evitar problemas com permissões no Linux)
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Configura permissões para as pastas storage e bootstrap/cache
-RUN chmod -R 775 storage bootstrap/cache
-RUN chown -R www-data:www-data storage bootstrap/cache
-
-# Configura o Apache para usar o DocumentRoot na pasta "public"
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-RUN sed -i "s|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|" /etc/apache2/sites-available/000-default.conf
-
-# Habilita o módulo rewrite do Apache
-RUN a2enmod rewrite
-
-# Expõe a porta 80 para o servidor
+# Expor a porta 80
 EXPOSE 80
 
-# Rodar o comando do Laravel para otimizar a configuração
-RUN php artisan config:clear && php artisan cache:clear && php artisan config:cache
-
-# Gera a chave da aplicação
-RUN php artisan key:generate --force
-
-# Inicia o Apache no primeiro plano
+# Iniciar o Apache no contêiner
 CMD ["apache2-foreground"]
 
 
