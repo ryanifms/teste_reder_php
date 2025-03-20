@@ -1,7 +1,7 @@
 # Usando imagem oficial do PHP com Apache
 FROM php:8.2-apache
 
-# Instalar extensões necessárias para o PostgreSQL
+# Instalar extensões necessárias para o PostgreSQL e outras dependências
 RUN apt-get update && apt-get install -y \
     libpq-dev unzip git curl \
     && docker-php-ext-install pdo pdo_pgsql
@@ -35,6 +35,10 @@ EXPOSE 80
 # Rodar o comando do Laravel para otimizar a configuração
 RUN php artisan config:clear && php artisan cache:clear && php artisan config:cache
 
+# Habilita o Laravel para rodar em produção (opcional)
+RUN php artisan key:generate --force
+
 # Inicia o Apache no primeiro plano
 CMD ["apache2-foreground"]
+
 
