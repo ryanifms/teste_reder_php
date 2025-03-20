@@ -1,46 +1,40 @@
-# Use a imagem base do PHP com Apache
+# Usar a imagem oficial do PHP com Apache
 FROM php:8.2-apache
 
-# Habilite o módulo de reescrita do Apache
+# Habilitar o módulo de reescrita do Apache (necessário para Laravel)
 RUN a2enmod rewrite
 
-# Instale dependências adicionais para o Laravel e PostgreSQL
-RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev git unzip \
-    libpq-dev && \
-    docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install gd pdo pdo_pgsql
+# Instalar dependências do sistema para Laravel e PostgreSQL
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    git \
+    unzip \
+    libpq-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_pgsql
 
-# Defina o diretório de trabalho
+# Definir o diretório de trabalho
 WORKDIR /var/www/html
 
-# Copie o código da aplicação Laravel para dentro do contêiner
+# Copiar o código da aplicação Laravel para o contêiner
 COPY . .
 
-# Altere as permissões para o Apache
-RUN chown -R www-data:www-data /var/www/html && \
-    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Alterar as permissões para o Apache acessar os arquivos
+RUN chown -R www-data:www-data /var/www/html
 
-# Defina o ServerName para evitar erro de domínio não qualificado
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
-# Instale o Composer
+# Instalar o Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Instale as dependências do Laravel via Composer
+# Instalar as dependências do Laravel via Composer
 RUN composer install --no-dev --optimize-autoloader
 
-# Defina o Apache para servir a pasta 'public'
-RUN echo '<VirtualHost *:80>' > /etc/apache2/sites-available/000-default.conf && \
-    echo '    DocumentRoot /var/www/html/public' >> /etc/apache2/sites-available/000-default.conf && \
-    echo '    <Directory /var/www/html/public>' >> /etc/apache2/sites-available/000-default.conf && \
-    echo '        AllowOverride All' >> /etc/apache2/sites-available/000-default.conf && \
-    echo '        Require all granted' >> /etc/apache2/sites-available/000-default.conf && \
-    echo '    </Directory>' >> /etc/apache2/sites-available/000-default.conf && \
-    echo '</VirtualHost>' >> /etc/apache2/sites-available/000-default.conf
-
-# Exponha a porta do Apache
+# Expor a porta 80
 EXPOSE 80
 
-# Defina o comando de inicialização
+# Definir o comando de inicialização do Apache
 CMD ["apache2-foreground"]
+
+
 
