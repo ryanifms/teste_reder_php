@@ -21,8 +21,15 @@ RUN composer install --no-dev --optimize-autoloader
 # Configura permissões
 RUN chmod -R 775 storage bootstrap/cache
 
+# **Definir o DocumentRoot para a pasta public**
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+RUN sed -i "s|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|" /etc/apache2/sites-available/000-default.conf
+
+# Habilita o mod_rewrite
+RUN a2enmod rewrite
+
 # Expõe a porta 80
 EXPOSE 80
 
-# Comando para iniciar o Apache
+# Reinicia o Apache
 CMD ["apache2-foreground"]
